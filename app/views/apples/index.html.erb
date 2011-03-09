@@ -1,0 +1,23 @@
+<h1>Listing apples</h1>
+
+<table>
+  <tr>
+    <th>Color</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @apples.each do |apple| %>
+  <tr>
+    <td><%= apple.color %></td>
+    <td><%= link_to 'Show', apple %></td>
+    <td><%= link_to 'Edit', edit_apple_path(apple) %></td>
+    <td><%= link_to 'Destroy', apple, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Apple', new_apple_path %>
