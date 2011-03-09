@@ -5,8 +5,8 @@
   <%= csrf_meta_tag %>
 </head>
 <body>
-
+<p><%= link_to "Ajax Post", '#', :id => 'create' %></p>
 <%= yield %>
-
+<%= javascript_include_tag "jquery", "rails", "application" %>
 </body>
 </html>
