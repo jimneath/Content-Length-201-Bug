@@ -1,0 +1,22 @@
+check process resque_<%= @app_name %>_playlist
+  with pidfile /var/run/engineyard/resque/<%= @app_name %>/resque_playlist.pid
+  start program = "/engineyard/bin/resque <%= @app_name %> start <%= @rails_env %> resque_playlist.conf" with timeout 90 seconds
+  stop program = "/engineyard/bin/resque <%= @app_name %> stop <%= @rails_env %> resque_playlist.conf" with timeout 90 seconds
+  if totalmem is greater than 300 MB for 2 cycles then restart # eating up memory?
+  group <%= @app_name %>_resque
+  
+check process resque_<%= @app_name %>_facebook
+  with pidfile /var/run/engineyard/resque/<%= @app_name %>/resque_facebook.pid
+  start program = "/engineyard/bin/resque <%= @app_name %> start <%= @rails_env %> resque_facebook.conf" with timeout 90 seconds
+  stop program = "/engineyard/bin/resque <%= @app_name %> stop <%= @rails_env %> resque_facebook.conf" with timeout 90 seconds
+  if totalmem is greater than 300 MB for 2 cycles then restart # eating up memory?
+  group <%= @app_name %>_resque
+  
+<% @populate_workers.times do |n| %>
+check process resque_<%= @app_name %>_populate_<%= n + 1 %>
+  with pidfile /var/run/engineyard/resque/<%= @app_name %>/resque_populate_<%= n + 1 %>.pid
+  start program = "/engineyard/bin/resque <%= @app_name %> start <%= @rails_env %> resque_populate_<%= n + 1 %>.conf" with timeout 90 seconds
+  stop program = "/engineyard/bin/resque <%= @app_name %> stop <%= @rails_env %> resque_populate_<%= n + 1 %>.conf" with timeout 90 seconds
+  if totalmem is greater than 300 MB for 2 cycles then restart # eating up memory?
+  group <%= @app_name %>_resque
+<% end %>

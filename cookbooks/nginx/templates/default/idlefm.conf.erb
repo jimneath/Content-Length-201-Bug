@@ -1,0 +1,43 @@
+# upstream
+upstream idlefm_upstream {
+  server unix:/var/run/engineyard/unicorn_idlefm.sock fail_timeout=0;
+}
+
+# www.idle.fm
+server {
+  listen 81;
+  server_name www.idle.fm;
+  rewrite ^(.*) http://idle.fm$1 permanent;
+}
+
+# idle.fm
+server {
+  listen 81;
+  server_name idle.fm;
+  root /data/idlefm/current/public;
+  
+  # logs
+  access_log /var/log/engineyard/nginx/idlefm.access.log main;
+  error_log /var/log/engineyard/nginx/idlefm.error.log notice;
+
+  # includes
+  include /etc/nginx/common/servers.conf;
+  include /etc/nginx/servers/idlefm.rewrites;
+  include /etc/nginx/servers/idlefm/custom.locations.conf;
+
+  location / {
+    # proxy
+    include /etc/nginx/common/proxy.conf;
+
+    # send none existent file requests to unicorn
+    if (!-f $request_filename) {
+      proxy_pass http://idlefm_upstream;
+      break;
+    }
+  }
+  
+  # 500 errors
+  location = /500.html {
+    root /data/idlefm/current/public;
+  }
+}
